@@ -333,10 +333,10 @@ function! s:warn(message)
   return 0
 endfunction
 
-function! s:fill_quickfix(list, ...)
+function! s:fill_loclist(list, ...)
   if len(a:list) > 1
-    call setqflist(a:list)
-    copen
+    call setloclist(0, a:list)
+    lopen
     wincmd p
     if a:0
       execute a:1
@@ -470,7 +470,7 @@ function! s:buffer_line_handler(lines)
     let ltxt = join(chunks[1:], "\t")
     call add(qfl, {'filename': expand('%'), 'lnum': str2nr(ln), 'text': ltxt})
   endfor
-  call s:fill_quickfix(qfl, 'cfirst')
+  call s:fill_loclist(qfl, 'lfirst')
   normal! m'
   let cmd = s:action_for(a:lines[0])
   if !empty(cmd)
@@ -758,7 +758,7 @@ function! s:ag_handler(lines, has_column)
   catch
   endtry
 
-  call s:fill_quickfix(list)
+  call s:fill_loclist(list)
 endfunction
 
 " query, [[ag options], options]
@@ -853,7 +853,7 @@ function! s:btags_sink(lines)
     execute split(line, "\t")[2]
     call add(qfl, {'filename': expand('%'), 'lnum': line('.'), 'text': getline('.')})
   endfor
-  call s:fill_quickfix(qfl, 'cfirst')
+  call s:fill_loclist(qfl, 'lfirst')
   normal! zvzz
 endfunction
 
@@ -910,7 +910,7 @@ function! s:tags_sink(lines)
   finally
     let [&magic, &wrapscan, &acd] = [magic, wrapscan, acd]
   endtry
-  call s:fill_quickfix(qfl, 'clast')
+  call s:fill_loclist(qfl, 'llast')
   normal! zvzz
 endfunction
 
